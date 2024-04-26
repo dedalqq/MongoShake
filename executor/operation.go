@@ -29,8 +29,7 @@ func (exec *Executor) ensureConnection() bool {
 		}
 
 		if conn, err := utils.NewMongoCommunityConn(exec.MongoUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernDefault, writeContern,
-			conf.Options.TunnelMongoSslRootCaFile); err != nil {
+			utils.ReadWriteConcernDefault, writeContern, conf.GetTunSSLConfig()); err != nil {
 
 			LOG.Critical("Connect to mongo cluster failed. %v", err)
 			return false

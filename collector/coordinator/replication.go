@@ -115,8 +115,9 @@ func (coordinator *ReplicationCoordinator) sanitizeMongoDB() error {
 	// try to connect CheckpointStorage
 	checkpointStorageUrl := conf.Options.CheckpointStorageUrl
 	if conn, err = utils.NewMongoCommunityConn(checkpointStorageUrl, utils.VarMongoConnectModePrimary, true,
-		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault,
-		conf.Options.CheckpointStorageUrlMongoSslRootCaFile); conn == nil || !conn.IsGood() || err != nil {
+		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, &utils.SSLConfig{
+			RootCAFilePath: conf.Options.CheckpointStorageUrlMongoSslRootCaFile,
+		}); conn == nil || !conn.IsGood() || err != nil {
 		LOG.Critical("Connect checkpointStorageUrl[%v] error[%v]. Please add primary node into 'mongo_urls' "+
 			"if 'context.storage.url' is empty", checkpointStorageUrl, err)
 		return err
@@ -126,7 +127,7 @@ func (coordinator *ReplicationCoordinator) sanitizeMongoDB() error {
 	for i, src := range coordinator.MongoD {
 		if conn, err = utils.NewMongoCommunityConn(src.URL, conf.Options.MongoConnectMode, true,
 			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault,
-			conf.Options.MongoSslRootCaFile); conn == nil || !conn.IsGood() || err != nil {
+			conf.GetSSLConfig()); conn == nil || !conn.IsGood() || err != nil {
 
 			LOG.Critical("Connect mongo server error. %v, url : %s. "+
 				"See https://github.com/alibaba/MongoShake/wiki/FAQ"+
@@ -200,7 +201,7 @@ func (coordinator *ReplicationCoordinator) serializeDocumentOplog(fullBeginTs in
 	// get current newest timestamp
 	var fullFinishTs, oldestTs int64
 	if conf.Options.SpecialSourceDBFlag != utils.VarSpecialSourceDBFlagAliyunServerless && len(coordinator.MongoD) > 0 {
-		_, fullFinishTs, _, oldestTs, _, err = utils.GetAllTimestamp(coordinator.MongoD, conf.Options.MongoSslRootCaFile)
+		_, fullFinishTs, _, oldestTs, _, err = utils.GetAllTimestamp(coordinator.MongoD, conf.GetSSLConfig())
 		if err != nil {
 			return fmt.Errorf("get full sync finish timestamp failed[%v]", err)
 		}

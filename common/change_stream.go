@@ -33,9 +33,9 @@ func NewChangeStreamConn(src string,
 	watchStartTime interface{},
 	batchSize int32,
 	sourceDbversion string,
-	sslRootFile string) (*ChangeStreamConn, error) {
+	sslConf *SSLConfig) (*ChangeStreamConn, error) {
 
-	conn, err := NewMongoCommunityConn(src, mode, true, ReadWriteConcernMajority, "", sslRootFile)
+	conn, err := NewMongoCommunityConn(src, mode, true, ReadWriteConcernMajority, "", sslConf)
 	if err != nil {
 		return nil, fmt.Errorf("NewChangeStreamConn source[%v %v] build connection failed: %v",
 			src, mode, err)
@@ -71,7 +71,7 @@ func NewChangeStreamConn(src string,
 
 	var csHandler *mongo.ChangeStream
 	if specialDb == VarSpecialSourceDBFlagAliyunServerless {
-		_, dbs, err := GetDbNamespace(src, filterFunc, sslRootFile)
+		_, dbs, err := GetDbNamespace(src, filterFunc, sslConf)
 		if err != nil {
 			return nil, fmt.Errorf("GetDbNamespace failed: %v", err)
 		}

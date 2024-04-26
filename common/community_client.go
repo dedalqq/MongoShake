@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,11 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
-	"io/ioutil"
+	"os"
 	"time"
 
 	LOG "github.com/vinllen/log4go"
 )
+
+type SSLConfig struct {
+	RootCAFilePath     string
+	ClientCertFilePath string
+	ClientKeyFilePath  string
+}
 
 type MongoCommunityConn struct {
 	Client *mongo.Client
@@ -26,17 +31,7 @@ type MongoCommunityConn struct {
 }
 
 func addCACertFromFile(cfg *tls.Config, file string) error {
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-
-	certBytes, err := loadCert(data)
-	if err != nil {
-		return err
-	}
-
-	cert, err := x509.ParseCertificate(certBytes)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}
@@ -45,51 +40,54 @@ func addCACertFromFile(cfg *tls.Config, file string) error {
 		cfg.RootCAs = x509.NewCertPool()
 	}
 
-	cfg.RootCAs.AddCert(cert)
+	cfg.RootCAs.AppendCertsFromPEM(data)
 
 	return nil
 }
 
-func loadCert(data []byte) ([]byte, error) {
-	var certBlock *pem.Block
-
-	for certBlock == nil {
-		if data == nil || len(data) == 0 {
-			return nil, fmt.Errorf(".pem file must have both a CERTIFICATE and an RSA PRIVATE KEY section")
-		}
-
-		block, rest := pem.Decode(data)
-		if block == nil {
-			return nil, fmt.Errorf("invalid .pem file")
-		}
-
-		switch block.Type {
-		case "CERTIFICATE":
-			if certBlock != nil {
-				return nil, fmt.Errorf("multiple CERTIFICATE sections in .pem file")
-			}
-
-			certBlock = block
-		}
-
-		data = rest
+func addClientCertAndKey(cfg *tls.Config, clientCert, clientKey string) error {
+	dataCert, err := os.ReadFile(clientCert)
+	if err != nil {
+		return err
 	}
 
-	return certBlock.Bytes, nil
+	dataKey, err := os.ReadFile(clientKey)
+	if err != nil {
+		return err
+	}
+
+	cert, err := tls.X509KeyPair(dataCert, dataKey)
+	if err != nil {
+		return nil
+	}
+
+	cfg.Certificates = []tls.Certificate{cert}
+
+	return nil
 }
 
 func NewMongoCommunityConn(url string, connectMode string, timeout bool, readConcern,
-	writeConcern string, sslRootFile string) (*MongoCommunityConn, error) {
+	writeConcern string, sslConf *SSLConfig) (*MongoCommunityConn, error) {
 
 	clientOps := options.Client().ApplyURI(url)
 
 	// tls tlsInsecure + tlsCaFile
-	if sslRootFile != "" {
+	if sslConf != nil && sslConf.RootCAFilePath != "" {
 		tlsConfig := new(tls.Config)
 
-		err := addCACertFromFile(tlsConfig, sslRootFile)
+		err := addCACertFromFile(tlsConfig, sslConf.RootCAFilePath)
 		if err != nil {
-			return nil, fmt.Errorf("load rootCaFile[%v] failed: %v", sslRootFile, err)
+			return nil, fmt.Errorf("load rootCaFile[%v] failed: %v", sslConf.RootCAFilePath, err)
+		}
+
+		if sslConf.ClientCertFilePath != "" && sslConf.ClientKeyFilePath != "" {
+			err := addClientCertAndKey(tlsConfig, sslConf.ClientCertFilePath, sslConf.ClientKeyFilePath)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"load clientCert File[%v] and Key[%v] failed: %v",
+					sslConf.ClientCertFilePath, sslConf.ClientKeyFilePath, err,
+				)
+			}
 		}
 
 		// not check hostname

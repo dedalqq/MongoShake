@@ -26,8 +26,8 @@ type CollectionExecutor struct {
 	// worker id
 	id int
 	// mongo url
-	mongoUrl    string
-	sslRootFile string
+	mongoUrl string
+	sslConf  *utils.SSLConfig
 
 	ns utils.NS
 
@@ -46,13 +46,13 @@ func GenerateCollExecutorId() int {
 	return int(atomic.AddInt32(&GlobalCollExecutorId, 1))
 }
 
-func NewCollectionExecutor(id int, mongoUrl string, ns utils.NS, syncer *DBSyncer, sslRootFile string) *CollectionExecutor {
+func NewCollectionExecutor(id int, mongoUrl string, ns utils.NS, syncer *DBSyncer, sslConf *utils.SSLConfig) *CollectionExecutor {
 	return &CollectionExecutor{
-		id:          id,
-		mongoUrl:    mongoUrl,
-		sslRootFile: sslRootFile,
-		ns:          ns,
-		syncer:      syncer,
+		id:       id,
+		mongoUrl: mongoUrl,
+		sslConf:  sslConf,
+		ns:       ns,
+		syncer:   syncer,
 		// batchCount: 0,
 	}
 }
@@ -67,7 +67,7 @@ func (colExecutor *CollectionExecutor) Start() error {
 		if colExecutor.conn, err = utils.NewMongoCommunityConn(colExecutor.mongoUrl,
 			utils.VarMongoConnectModePrimary, true,
 			utils.ReadWriteConcernDefault, writeConcern,
-			colExecutor.sslRootFile); err != nil {
+			colExecutor.sslConf); err != nil {
 			return err
 		}
 	}

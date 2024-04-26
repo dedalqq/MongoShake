@@ -26,7 +26,7 @@ func TestCommonFunctions(t *testing.T) {
 		nr++
 
 		conn, err := NewMongoCommunityConn(testMongoAddress, VarMongoConnectModeSecondaryPreferred, true,
-			ReadWriteConcernDefault, ReadWriteConcernDefault, "")
+			ReadWriteConcernDefault, ReadWriteConcernDefault, nil)
 		assert.Equal(t, err, nil, "")
 
 		ok, err := GetAndCompareVersion(conn, "3.4.0", "")
@@ -41,7 +41,7 @@ func TestCommonFunctions(t *testing.T) {
 		nr++
 
 		conn, err := NewMongoCommunityConn(testMongoAddress, VarMongoConnectModeSecondaryPreferred, true,
-			ReadWriteConcernDefault, ReadWriteConcernDefault, "")
+			ReadWriteConcernDefault, ReadWriteConcernDefault, nil)
 		assert.Equal(t, err, nil, "")
 
 		ok := conn.IsGood()
@@ -95,7 +95,7 @@ func TestCommonFunctions(t *testing.T) {
 		nr++
 
 		conn, err := NewMongoCommunityConn(unit_test_common.TestUrl5_0, VarMongoConnectModeSecondaryPreferred, true,
-			ReadWriteConcernDefault, ReadWriteConcernDefault, "")
+			ReadWriteConcernDefault, ReadWriteConcernDefault, nil)
 		assert.Equal(t, err, nil, "")
 
 		err = conn.Client.Database(testDb).Drop(context.Background())

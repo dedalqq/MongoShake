@@ -33,7 +33,7 @@ func TestExtraJob(t *testing.T) {
 		}
 		mongoCollections := []string{"test.c1", "test.c2"}
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database

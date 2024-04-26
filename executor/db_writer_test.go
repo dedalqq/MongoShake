@@ -92,7 +92,7 @@ func TestSingleWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -138,7 +138,7 @@ func TestSingleWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, false, 0)
@@ -188,7 +188,8 @@ func TestSingleWriter(t *testing.T) {
 		fmt.Printf("TestSingleWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, false, 1)
@@ -240,7 +241,8 @@ func TestSingleWriter(t *testing.T) {
 		fmt.Printf("TestSingleWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, false, 0)
@@ -319,7 +321,8 @@ func TestSingleWriter(t *testing.T) {
 		fmt.Printf("TestSingleWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -408,7 +411,7 @@ func TestSingleWriter(t *testing.T) {
 		conf.Options.IncrSyncExecutorUpsert = true
 
 		conn, err := utils.NewMongoCommunityConn(testMongoShardingAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, false, 0)
@@ -503,7 +506,7 @@ func TestBulkWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -594,7 +597,7 @@ func TestBulkWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, true, 0)
@@ -663,7 +666,8 @@ func TestBulkWriter(t *testing.T) {
 		fmt.Printf("TestBulkWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -741,7 +745,8 @@ func TestBulkWriter(t *testing.T) {
 		fmt.Printf("TestBulkWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -811,7 +816,8 @@ func TestBulkWriter(t *testing.T) {
 
 		utils.InitialLogger("", "", "info", true, 1)
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -897,7 +903,7 @@ func TestBulkWriter(t *testing.T) {
 		conf.Options.IncrSyncExecutorUpsert = true
 
 		conn, err := utils.NewMongoCommunityConn(testMongoShardingAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{}, true, 0)
@@ -994,7 +1000,7 @@ func TestCommandWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1085,7 +1091,7 @@ func TestCommandWriter(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{"g": 1}, true, 0)
@@ -1156,7 +1162,8 @@ func TestCommandWriter(t *testing.T) {
 		fmt.Printf("TestCommandWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1234,7 +1241,8 @@ func TestCommandWriter(t *testing.T) {
 		fmt.Printf("TestCommandWriter case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1304,7 +1312,8 @@ func TestCommandWriter(t *testing.T) {
 
 		utils.InitialLogger("", "", "info", true, 1)
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1388,7 +1397,7 @@ func TestCommandWriter(t *testing.T) {
 		conf.Options.IncrSyncExecutorUpsert = true
 
 		conn, err := utils.NewMongoCommunityConn(testMongoShardingAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{"g": 1}, true, 0)
@@ -1484,7 +1493,8 @@ func TestRunCommand(t *testing.T) {
 		fmt.Printf("TestRunCommand case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1551,7 +1561,7 @@ func TestRunCommand(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		_, err = conn.Client.Database("zz").Collection("y").InsertOne(context.Background(), bson.M{"x": 1})
@@ -1599,7 +1609,7 @@ func TestRunCommand(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		_, err = conn.Client.Database("zz").Collection("y").InsertOne(context.Background(), bson.M{"x": 1})
@@ -1639,7 +1649,7 @@ func TestRunCommand(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		_, err = conn.Client.Database("zz").Collection("y").InsertOne(context.Background(), bson.M{"x": 1})
@@ -1704,7 +1714,7 @@ func TestRunCommand(t *testing.T) {
 		conf.Options.FilterDDLEnable = true
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{"g": 1}, true, 0)
@@ -1776,7 +1786,7 @@ func TestRunCommand(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop database
@@ -1844,7 +1854,7 @@ func TestRunCommand(t *testing.T) {
 		conf.Options.FilterDDLEnable = true
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, "primary", true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		writer := NewDbWriter(conn, bson.M{"g": 1}, true, 0)

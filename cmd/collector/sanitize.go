@@ -281,7 +281,7 @@ func checkConnection() error {
 	// check mongo_urls
 	for _, mongo := range conf.Options.MongoUrls {
 		_, err := utils.NewMongoCommunityConn(mongo, conf.Options.MongoConnectMode, true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile)
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.GetSSLConfig())
 		if err != nil {
 			return fmt.Errorf("connect source mongodb[%v] failed[%v]", utils.BlockMongoUrlPassword(mongo, "***"), err)
 		}
@@ -290,7 +290,7 @@ func checkConnection() error {
 	// check mongo_cs_url
 	if conf.Options.MongoCsUrl != "" {
 		_, err := utils.NewMongoCommunityConn(conf.Options.MongoCsUrl, utils.VarMongoConnectModeSecondaryPreferred,
-			true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile)
+			true, utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.GetSSLConfig())
 		if err != nil {
 			return fmt.Errorf("connect config-server[%v] failed[%v]", utils.BlockMongoUrlPassword(conf.Options.MongoCsUrl, "***"), err)
 		}
@@ -303,7 +303,7 @@ func checkConnection() error {
 		!conf.Options.IncrSyncExecutorDebug {
 		for i, mongo := range conf.Options.TunnelAddress {
 			targetConn, err := utils.NewMongoCommunityConn(mongo, conf.Options.MongoConnectMode, true,
-				utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.Options.TunnelMongoSslRootCaFile)
+				utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.GetTunSSLConfig())
 			if err != nil {
 				return fmt.Errorf("connect target tunnel mongodb[%v] failed[%v]", utils.BlockMongoUrlPassword(mongo, "***"), err)
 			}
@@ -322,7 +322,7 @@ func checkConnection() error {
 	}
 
 	sourceConn, _ := utils.NewMongoCommunityConn(source, utils.VarMongoConnectModeSecondaryPreferred, true,
-		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile)
+		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.GetSSLConfig())
 	// ignore error
 	conf.Options.SourceDBVersion, _ = utils.GetDBVersion(sourceConn)
 	if ok, err := utils.GetAndCompareVersion(sourceConn, "2.6.0",
@@ -434,7 +434,7 @@ func checkConflict() error {
 		}
 
 		conn, err := utils.NewMongoCommunityConn(source, utils.VarMongoConnectModeSecondaryPreferred, true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile)
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, conf.GetSSLConfig())
 		if err != nil {
 			return fmt.Errorf("connect source[%v] failed[%v]", utils.BlockMongoUrlPassword(source, "***"), err)
 		}

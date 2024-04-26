@@ -166,7 +166,7 @@ func (er *EventReader) EnsureNetwork() error {
 		er.startAtOperationTime,
 		int32(BatchSize),
 		conf.Options.SourceDBVersion,
-		conf.Options.MongoSslRootCaFile); err != nil {
+		conf.GetSSLConfig()); err != nil {
 		return err
 	}
 

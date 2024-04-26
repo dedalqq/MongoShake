@@ -32,7 +32,7 @@ func TestMongoCheckpoint(t *testing.T) {
 
 		name := "ut_tet"
 		conn, err := utils.NewMongoCommunityConn(testUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop test db
@@ -58,7 +58,7 @@ func TestMongoCheckpoint(t *testing.T) {
 
 		name := "ut_tet"
 		conn, err := utils.NewMongoCommunityConn(testUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop test db
@@ -105,7 +105,7 @@ func TestMongoCheckpoint(t *testing.T) {
 
 		name := "ut_tet"
 		conn, err := utils.NewMongoCommunityConn(testUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop test db
@@ -146,7 +146,7 @@ func TestMongoCheckpoint(t *testing.T) {
 
 		name := "ut_tet"
 		conn, err := utils.NewMongoCommunityConn(testUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop test db
@@ -206,7 +206,7 @@ func TestMongoCheckpoint(t *testing.T) {
 
 		name := "ut_tet"
 		conn, err := utils.NewMongoCommunityConn(testUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernMajority, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop test db

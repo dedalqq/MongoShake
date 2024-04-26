@@ -135,11 +135,11 @@ func GetOldestTimestampByConn(conn *MongoCommunityConn) (int64, error) {
 	return getOplogTimestamp(conn, 1)
 }
 
-func GetNewestTimestampByUrl(url string, fromMongoS bool, sslRootFile string) (int64, error) {
+func GetNewestTimestampByUrl(url string, fromMongoS bool, sslConf *SSLConfig) (int64, error) {
 	var conn *MongoCommunityConn
 	var err error
 	if conn, err = NewMongoCommunityConn(url, VarMongoConnectModeSecondaryPreferred, true,
-		ReadWriteConcernDefault, ReadWriteConcernDefault, sslRootFile); conn == nil || err != nil {
+		ReadWriteConcernDefault, ReadWriteConcernDefault, sslConf); conn == nil || err != nil {
 		return 0, err
 	}
 	defer conn.Close()
@@ -151,7 +151,7 @@ func GetNewestTimestampByUrl(url string, fromMongoS bool, sslRootFile string) (i
 	return GetNewestTimestampByConn(conn)
 }
 
-func GetOldestTimestampByUrl(url string, fromMongoS bool, sslRootFile string) (int64, error) {
+func GetOldestTimestampByUrl(url string, fromMongoS bool, sslConf *SSLConfig) (int64, error) {
 	if fromMongoS {
 		return 0, nil
 	}
@@ -159,7 +159,7 @@ func GetOldestTimestampByUrl(url string, fromMongoS bool, sslRootFile string) (i
 	var conn *MongoCommunityConn
 	var err error
 	if conn, err = NewMongoCommunityConn(url, VarMongoConnectModeSecondaryPreferred, true,
-		ReadWriteConcernDefault, ReadWriteConcernDefault, sslRootFile); conn == nil || err != nil {
+		ReadWriteConcernDefault, ReadWriteConcernDefault, sslConf); conn == nil || err != nil {
 		return 0, err
 	}
 	defer conn.Close()
@@ -167,7 +167,7 @@ func GetOldestTimestampByUrl(url string, fromMongoS bool, sslRootFile string) (i
 	return GetOldestTimestampByConn(conn)
 }
 
-// record the oldest and newest timestamp of each mongod
+// TimestampNode record the oldest and newest timestamp of each mongod
 type TimestampNode struct {
 	Oldest int64
 	Newest int64
@@ -181,7 +181,7 @@ type TimestampNode struct {
  *     primitive.Timestamp: the smallest of the newest timestamp
  *     error: error
  */
-func GetAllTimestamp(sources []*MongoSource, sslRootFile string) (map[string]TimestampNode, int64,
+func GetAllTimestamp(sources []*MongoSource, sslConf *SSLConfig) (map[string]TimestampNode, int64,
 	int64, int64, int64, error) {
 	smallestNew := int64(math.MaxInt64)
 	biggestNew := int64(0)
@@ -190,14 +190,14 @@ func GetAllTimestamp(sources []*MongoSource, sslRootFile string) (map[string]Tim
 	tsMap := make(map[string]TimestampNode)
 
 	for _, src := range sources {
-		newest, err := GetNewestTimestampByUrl(src.URL, false, sslRootFile)
+		newest, err := GetNewestTimestampByUrl(src.URL, false, sslConf)
 		if err != nil {
 			return nil, 0, 0, 0, 0, err
 		} else if newest == 0 {
 			return nil, 0, 0, 0, 0, fmt.Errorf("illegal newest timestamp == 0")
 		}
 
-		oldest, err := GetOldestTimestampByUrl(src.URL, false, sslRootFile)
+		oldest, err := GetOldestTimestampByUrl(src.URL, false, sslConf)
 		if err != nil {
 			return nil, 0, 0, 0, 0, err
 		}
@@ -308,11 +308,11 @@ func GetListCollectionQueryCondition(conn *MongoCommunityConn) bson.M {
  *     @map[string][]string: db->collection map. e.g., "a"->[]string{"b", "c"}
  *     @error: error info
  */
-func GetDbNamespace(url string, filterFunc func(name string) bool, sslRootFile string) ([]NS, map[string][]string, error) {
+func GetDbNamespace(url string, filterFunc func(name string) bool, sslConf *SSLConfig) ([]NS, map[string][]string, error) {
 	var err error
 	var conn *MongoCommunityConn
 	if conn, err = NewMongoCommunityConn(url, VarMongoConnectModePrimary, true,
-		ReadWriteConcernLocal, ReadWriteConcernDefault, sslRootFile); conn == nil || err != nil {
+		ReadWriteConcernLocal, ReadWriteConcernDefault, sslConf); conn == nil || err != nil {
 		return nil, nil, err
 	}
 	defer conn.Close()
@@ -368,10 +368,10 @@ func GetDbNamespace(url string, filterFunc func(name string) bool, sslRootFile s
  *     @error: error info
  */
 func GetAllNamespace(sources []*MongoSource, filterFunc func(name string) bool,
-	sslRootFile string) (map[NS]struct{}, map[string][]string, error) {
+	sslConf *SSLConfig) (map[NS]struct{}, map[string][]string, error) {
 	nsSet := make(map[NS]struct{})
 	for _, src := range sources {
-		nsList, _, err := GetDbNamespace(src.URL, filterFunc, sslRootFile)
+		nsList, _, err := GetDbNamespace(src.URL, filterFunc, sslConf)
 		if err != nil {
 			return nil, nil, err
 		}

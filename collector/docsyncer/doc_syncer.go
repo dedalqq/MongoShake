@@ -106,7 +106,7 @@ func StartNamespaceSpecSyncForSharding(csUrl string, toConn *utils.MongoCommunit
 	var err error
 	if fromConn, err = utils.NewMongoCommunityConn(csUrl, utils.VarMongoConnectModePrimary, true,
 		utils.ReadWriteConcernMajority, utils.ReadWriteConcernDefault,
-		conf.Options.MongoSslRootCaFile); err != nil {
+		conf.GetSSLConfig()); err != nil {
 		LOG.Info("Connect to [%s] failed. err[%v]", csUrl, err)
 		return err
 	}
@@ -237,7 +237,7 @@ func StartIndexSync(indexMap map[utils.NS][]bson.D, toUrl string,
 			var conn *utils.MongoCommunityConn
 			var err error
 			if conn, err = utils.NewMongoCommunityConn(toUrl, utils.VarMongoConnectModePrimary, true,
-				utils.ReadWriteConcernLocal, utils.ReadWriteConcernMajority, conf.Options.TunnelMongoSslRootCaFile); err != nil {
+				utils.ReadWriteConcernLocal, utils.ReadWriteConcernMajority, conf.GetTunSSLConfig()); err != nil {
 				LOG.Error("write index but create client fail: %v", err)
 				return
 			}
@@ -377,8 +377,7 @@ func (syncer *DBSyncer) Start() (syncError error) {
 	filterList := filter.NewDocFilterList()
 
 	// get all namespace
-	nsList, _, err := utils.GetDbNamespace(syncer.FromMongoUrl, filterList.IterateFilter,
-		conf.Options.MongoSslRootCaFile)
+	nsList, _, err := utils.GetDbNamespace(syncer.FromMongoUrl, filterList.IterateFilter, conf.GetSSLConfig())
 	if err != nil {
 		return err
 	}
@@ -445,13 +444,13 @@ func (syncer *DBSyncer) Start() (syncError error) {
 // start sync single collection
 func (syncer *DBSyncer) collectionSync(collExecutorId int, ns utils.NS, toNS utils.NS) error {
 	// writer
-	colExecutor := NewCollectionExecutor(collExecutorId, syncer.ToMongoUrl, toNS, syncer, conf.Options.TunnelMongoSslRootCaFile)
+	colExecutor := NewCollectionExecutor(collExecutorId, syncer.ToMongoUrl, toNS, syncer, conf.GetTunSSLConfig())
 	if err := colExecutor.Start(); err != nil {
 		return fmt.Errorf("start collectionSync failed: %v", err)
 	}
 
 	// splitter reader
-	splitter := NewDocumentSplitter(syncer.FromMongoUrl, conf.Options.MongoSslRootCaFile, ns)
+	splitter := NewDocumentSplitter(syncer.FromMongoUrl, conf.GetSSLConfig(), ns)
 	if splitter == nil {
 		return fmt.Errorf("create splitter failed")
 	}

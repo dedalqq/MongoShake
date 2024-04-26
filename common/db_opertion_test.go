@@ -27,7 +27,7 @@ func TestGetAndCompareVersion(t *testing.T) {
 		nr++
 
 		conn, err := NewMongoCommunityConn(testMongoAddress, VarMongoConnectModeSecondaryPreferred, true,
-			ReadWriteConcernDefault, ReadWriteConcernDefault, "")
+			ReadWriteConcernDefault, ReadWriteConcernDefault, nil)
 		assert.Equal(t, err, nil, "")
 
 		ok, err := GetAndCompareVersion(conn, "3.4.0", "")
@@ -84,7 +84,7 @@ func TestGetDbNamespace(t *testing.T) {
 		nr++
 
 		conn, err := NewMongoCommunityConn(testMongoAddress, VarMongoConnectModePrimary, true,
-			ReadWriteConcernLocal, ReadWriteConcernDefault, "")
+			ReadWriteConcernLocal, ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		err = conn.Client.Database("db1").Drop(nil)
@@ -106,7 +106,7 @@ func TestGetDbNamespace(t *testing.T) {
 			}
 			return true
 		}
-		nsList, nsMap, err := GetDbNamespace(testMongoAddress, filterFunc, "")
+		nsList, nsMap, err := GetDbNamespace(testMongoAddress, filterFunc, nil)
 		fmt.Println(nsList, nsMap)
 		assert.Equal(t, nil, err, "should be equal")
 		assert.Equal(t, 5, len(nsList), "should be equal")
@@ -120,7 +120,8 @@ func TestGetDbNamespace(t *testing.T) {
 		nr++
 
 		// drop all old table
-		conn, err := NewMongoCommunityConn(testUrlServerless, "primary", true, "", "", "")
+		conn, err := NewMongoCommunityConn(testUrlServerless, "primary", true,
+			"", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 		err = conn.Client.Database(testDb).Drop(nil)
 		assert.Equal(t, nil, err, "should be equal")
@@ -162,7 +163,7 @@ func TestGetDbNamespace(t *testing.T) {
 			}
 			return true
 		}
-		nsList, nsMap, err := GetDbNamespace(testUrlServerless, filterFunc, "")
+		nsList, nsMap, err := GetDbNamespace(testUrlServerless, filterFunc, nil)
 		fmt.Println(nsList, nsMap)
 		assert.Equal(t, nil, err, "should be equal")
 		assert.Equal(t, 3, len(nsList), "should be equal")
@@ -187,7 +188,7 @@ func TestGetAllNamespace(t *testing.T) {
 			},
 		}
 
-		tsMap, biggestNew, smallestNew, biggestOld, smallestOld, err := GetAllTimestamp(mgoSources, "")
+		tsMap, biggestNew, smallestNew, biggestOld, smallestOld, err := GetAllTimestamp(mgoSources, nil)
 		assert.Equal(t, nil, err, "should be equal")
 		fmt.Printf("TestGetAllNamespace biggestNew:%v, smallestNew:%v, biggestOld:%v, smallestOld:%v,"+
 			", tsMap:%v\n",

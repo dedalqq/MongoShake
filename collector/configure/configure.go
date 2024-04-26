@@ -25,7 +25,8 @@ type Configuration struct {
 	MongoCsUrl                             string   `config:"mongo_cs_url"`
 	MongoSUrl                              string   `config:"mongo_s_url"`
 	MongoSslRootCaFile                     string   `config:"mongo_ssl_root_ca_file"` // add v2.6.2
-	MongoSslClientCaFile                   string   `config:"mongo_ssl_root_ca_file"`
+	MongoSslClientCert                     string   `config:"mongo_ssl_client_cert"`
+	MongoSslClientKey                      string   `config:"mongo_ssl_client_key"`
 	MongoConnectMode                       string   `config:"mongo_connect_mode"`
 	Tunnel                                 string   `config:"tunnel"`
 	TunnelAddress                          []string `config:"tunnel.address"`
@@ -33,6 +34,8 @@ type Configuration struct {
 	TunnelKafkaPartitionNumber             int      `config:"tunnel.kafka.partition_number"` // add v2.4.21
 	TunnelJsonFormat                       string   `config:"tunnel.json.format"`
 	TunnelMongoSslRootCaFile               string   `config:"tunnel.mongo_ssl_root_ca_file"` // add v2.6.2
+	TunnelMongoSslClientCert               string   `config:"tunnel.mongo_ssl_client_cert"`
+	TunnelMongoSslClientKey                string   `config:"tunnel.mongo_ssl_client_key"`
 	FilterNamespaceBlack                   []string `config:"filter.namespace.black"`
 	FilterNamespaceWhite                   []string `config:"filter.namespace.white"`
 	FilterPassSpecialDb                    []string `config:"filter.pass.special.db"`
@@ -118,6 +121,22 @@ func (configuration *Configuration) IsShardCluster() bool {
 }
 
 var Options Configuration
+
+func GetSSLConfig() *utils.SSLConfig {
+	return &utils.SSLConfig{
+		RootCAFilePath:     Options.MongoSslRootCaFile,
+		ClientCertFilePath: Options.MongoSslClientCert,
+		ClientKeyFilePath:  Options.MongoSslClientKey,
+	}
+}
+
+func GetTunSSLConfig() *utils.SSLConfig {
+	return &utils.SSLConfig{
+		RootCAFilePath:     Options.TunnelMongoSslRootCaFile,
+		ClientCertFilePath: Options.TunnelMongoSslClientCert,
+		ClientKeyFilePath:  Options.TunnelMongoSslClientKey,
+	}
+}
 
 func GetSafeOptions() Configuration {
 	polish := new(Configuration)

@@ -16,9 +16,9 @@ import (
 /*************************************************/
 // splitter: pre-split the collection into several pieces
 type DocumentSplitter struct {
-	src           string   // source mongo address url
-	sslRootCaFile string   // source root ca ssl
-	ns            utils.NS // namespace
+	src           string           // source mongo address url
+	sslConf       *utils.SSLConfig // source root ca ssl
+	ns            utils.NS         // namespace
 	client        *utils.MongoCommunityConn
 	readerChan    chan *DocumentReader // reader chan
 	pieceByteSize uint64               // each piece max byte size
@@ -26,18 +26,18 @@ type DocumentSplitter struct {
 	pieceNumber   int                  // how many piece
 }
 
-func NewDocumentSplitter(src, sslRootCaFile string, ns utils.NS) *DocumentSplitter {
+func NewDocumentSplitter(src string, sslConf *utils.SSLConfig, ns utils.NS) *DocumentSplitter {
 	ds := &DocumentSplitter{
-		src:           src,
-		sslRootCaFile: sslRootCaFile,
-		ns:            ns,
+		src:     src,
+		sslConf: sslConf,
+		ns:      ns,
 	}
 
 	// create connection
 	var err error
 	// disable timeout
 	ds.client, err = utils.NewMongoCommunityConn(ds.src, conf.Options.MongoConnectMode, false,
-		utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, sslRootCaFile)
+		utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, sslConf)
 	if err != nil {
 		LOG.Error("splitter[%s] connection mongo[%v] failed[%v]", ds,
 			utils.BlockMongoUrlPassword(ds.src, "***"), err)
@@ -98,7 +98,7 @@ func (ds *DocumentSplitter) Run() error {
 	// disable split
 	if conf.Options.FullSyncReaderParallelThread <= 1 {
 		LOG.Info("splitter[%s] disable split or no need", ds)
-		ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslRootCaFile)
+		ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslConf)
 		LOG.Info("splitter[%s] exits", ds)
 		return nil
 	}
@@ -115,7 +115,7 @@ func (ds *DocumentSplitter) Run() error {
 	// if failed, do not panic, run single thread fetching
 	if err != nil {
 		LOG.Warn("splitter[%s] run splitVector failed[%v], give up parallel fetching", ds, err)
-		ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslRootCaFile)
+		ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslConf)
 		LOG.Info("splitter[%s] exits", ds)
 		return nil
 	}
@@ -141,7 +141,7 @@ func (ds *DocumentSplitter) Run() error {
 
 				LOG.Info("splitter[%s] piece[%d] create reader with boundary(%v, %v]", ds, cnt, start, val)
 				// inject new DocumentReader into channel
-				ds.readerChan <- NewDocumentReader(cnt, ds.src, ds.ns, key, start, val, ds.sslRootCaFile)
+				ds.readerChan <- NewDocumentReader(cnt, ds.src, ds.ns, key, start, val, ds.sslConf)
 
 				// new start
 				start = val
@@ -151,7 +151,7 @@ func (ds *DocumentSplitter) Run() error {
 				if i == len(splitKeysList)-1 {
 					LOG.Info("splitter[%s] piece[%d] create reader with boundary(%v, INF)", ds, cnt, start)
 					// inject new DocumentReader into channel
-					ds.readerChan <- NewDocumentReader(cnt, ds.src, ds.ns, key, start, nil, ds.sslRootCaFile)
+					ds.readerChan <- NewDocumentReader(cnt, ds.src, ds.ns, key, start, nil, ds.sslConf)
 				}
 			}
 
@@ -164,7 +164,7 @@ func (ds *DocumentSplitter) Run() error {
 	}
 
 	LOG.Warn("splitter[%s] give up parallel fetching", ds, err)
-	ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslRootCaFile)
+	ds.readerChan <- NewDocumentReader(0, ds.src, ds.ns, "", nil, nil, ds.sslConf)
 	LOG.Info("splitter[%s] exits", ds)
 
 	LOG.Info("splitter[%s] exits", ds)
@@ -187,9 +187,9 @@ func parseDocKeyValue(x interface{}) (string, interface{}, error) {
 // DocumentReader: the reader of single piece
 type DocumentReader struct {
 	// source mongo address url
-	src           string
-	ns            utils.NS
-	sslRootCaFile string // source root ca ssl
+	src     string
+	ns      utils.NS
+	sslConf *utils.SSLConfig // source root ca ssl
 
 	// mongo document reader
 	client      *utils.MongoCommunityConn
@@ -205,7 +205,7 @@ type DocumentReader struct {
 }
 
 // NewDocumentReader creates reader with mongodb url
-func NewDocumentReader(id int, src string, ns utils.NS, key string, start, end interface{}, sslRootCaFile string) *DocumentReader {
+func NewDocumentReader(id int, src string, ns utils.NS, key string, start, end interface{}, sslConf *utils.SSLConfig) *DocumentReader {
 	q := make(bson.M)
 	if start != nil || end != nil {
 		innerQ := make(bson.M)
@@ -221,13 +221,13 @@ func NewDocumentReader(id int, src string, ns utils.NS, key string, start, end i
 	ctx := context.Background()
 
 	return &DocumentReader{
-		id:            id,
-		src:           src,
-		ns:            ns,
-		sslRootCaFile: sslRootCaFile,
-		query:         q,
-		key:           key,
-		ctx:           ctx,
+		id:      id,
+		src:     src,
+		ns:      ns,
+		sslConf: sslConf,
+		query:   q,
+		key:     key,
+		ctx:     ctx,
 	}
 }
 
@@ -273,7 +273,7 @@ func (reader *DocumentReader) ensureNetwork() (err error) {
 	if reader.client == nil {
 		LOG.Info("reader[%s] client is empty, create one", reader.String())
 		reader.client, err = utils.NewMongoCommunityConn(reader.src, conf.Options.MongoConnectMode, true,
-			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile)
+			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, conf.GetSSLConfig())
 		if err != nil {
 			return err
 		}

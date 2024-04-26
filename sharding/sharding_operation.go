@@ -34,7 +34,7 @@ func GetBalancerStatusByUrl(csUrl string) (bool, error) {
 	var err error
 	if conn, err = utils.NewMongoCommunityConn(csUrl, utils.VarMongoConnectModePrimary, true,
 		utils.ReadWriteConcernMajority, utils.ReadWriteConcernDefault,
-		conf.Options.MongoSslRootCaFile); conn == nil || err != nil {
+		conf.GetSSLConfig()); conn == nil || err != nil {
 		return true, err
 	}
 	defer conn.Close()
@@ -74,7 +74,7 @@ func GetChunkMapByUrl(csUrl string) (ShardingChunkMap, error) {
 	var conn *utils.MongoCommunityConn
 	var err error
 	if conn, err = utils.NewMongoCommunityConn(csUrl, utils.VarMongoConnectModePrimary, true,
-		utils.ReadWriteConcernMajority, utils.ReadWriteConcernDefault, conf.Options.MongoSslRootCaFile); conn == nil || err != nil {
+		utils.ReadWriteConcernMajority, utils.ReadWriteConcernDefault, conf.GetSSLConfig()); conn == nil || err != nil {
 		return nil, err
 	}
 	defer conn.Close()

@@ -69,7 +69,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -143,7 +143,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -248,7 +248,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -327,7 +327,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -402,7 +402,7 @@ func TestSelectSyncMode(t *testing.T) {
 		// test on checkpoint set
 
 		// drop old table
-		conn, err = utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err = utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -454,7 +454,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -534,7 +534,7 @@ func TestSelectSyncMode(t *testing.T) {
 		// test on checkpoint set
 
 		// drop old table
-		conn, err = utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err = utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -580,7 +580,7 @@ func TestSelectSyncMode(t *testing.T) {
 		}
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrl, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -641,7 +641,7 @@ func TestSelectSyncMode(t *testing.T) {
 		testReplicaName := "mockReplicaSet"
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrlServerless, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrlServerless, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -680,7 +680,7 @@ func TestSelectSyncMode(t *testing.T) {
 		testReplicaName := "mockReplicaSet"
 
 		// drop old table
-		conn, err := utils.NewMongoCommunityConn(testUrlServerless, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testUrlServerless, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		conn.Client.Database(testDb).Collection(testCollection).Drop(nil)
@@ -737,7 +737,7 @@ func TestFetchIndexes(t *testing.T) {
 		}
 
 		// drop all old table
-		conn, err := utils.NewMongoCommunityConn(url, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(url, "primary", true, "", "", nil)
 		assert.Equal(t, nil, err, "should be equal")
 		conn.Client.Database(testDb).Drop(nil)
 

@@ -41,7 +41,7 @@ func fetchChunkMap(isSharding bool) (sharding.ShardingChunkMap, error) {
 	return nil, nil
 }
 
-func getTimestampMap(sources []*utils.MongoSource, sslRootFile string) (map[string]utils.TimestampNode, error) {
+func getTimestampMap(sources []*utils.MongoSource, sslConf *utils.SSLConfig) (map[string]utils.TimestampNode, error) {
 	// no need to fetch if sync mode is full only
 	if conf.Options.SyncMode == utils.VarSyncModeFull {
 		return nil, nil
@@ -50,7 +50,7 @@ func getTimestampMap(sources []*utils.MongoSource, sslRootFile string) (map[stri
 	var ckptMap map[string]utils.TimestampNode
 	var err error
 
-	ckptMap, _, _, _, _, err = utils.GetAllTimestamp(sources, sslRootFile)
+	ckptMap, _, _, _, _, err = utils.GetAllTimestamp(sources, sslConf)
 	if err != nil {
 		return nil, fmt.Errorf("fetch source all timestamp failed: %v", err)
 	}
@@ -79,7 +79,7 @@ func (coordinator *ReplicationCoordinator) startDocumentReplication() error {
 	filterList := filter.NewDocFilterList()
 	// get all namespace need to sync
 	nsSet, _, err := utils.GetAllNamespace(coordinator.RealSourceFullSync, filterList.IterateFilter,
-		conf.Options.MongoSslRootCaFile)
+		conf.GetSSLConfig())
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (coordinator *ReplicationCoordinator) startDocumentReplication() error {
 	var ckptMap map[string]utils.TimestampNode
 	if conf.Options.SpecialSourceDBFlag != utils.VarSpecialSourceDBFlagAliyunServerless && len(coordinator.MongoD) > 0 {
 		// get current newest timestamp
-		ckptMap, err = getTimestampMap(coordinator.MongoD, conf.Options.MongoSslRootCaFile)
+		ckptMap, err = getTimestampMap(coordinator.MongoD, conf.GetSSLConfig())
 		if err != nil {
 			return err
 		}
@@ -98,8 +98,14 @@ func (coordinator *ReplicationCoordinator) startDocumentReplication() error {
 	toUrl := conf.Options.TunnelAddress[0]
 	var toConn *utils.MongoCommunityConn
 	if !conf.Options.FullSyncExecutorDebug {
+		tunSSLCfg := &utils.SSLConfig{
+			RootCAFilePath:     conf.Options.TunnelMongoSslRootCaFile,
+			ClientCertFilePath: conf.Options.TunnelMongoSslClientCert,
+			ClientKeyFilePath:  conf.Options.TunnelMongoSslClientKey,
+		}
+
 		if toConn, err = utils.NewMongoCommunityConn(toUrl, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, conf.Options.TunnelMongoSslRootCaFile); err != nil {
+			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, tunSSLCfg); err != nil {
 			return err
 		}
 		defer toConn.Close()

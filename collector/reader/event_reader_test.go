@@ -139,7 +139,7 @@ func TestEventReader(t *testing.T) {
 		fmt.Printf("TestEventReader case %d.\n", nr)
 		nr++
 
-		conn, err := utils.NewMongoCommunityConn(testMongoAddressCs, "primary", true, "", "", "")
+		conn, err := utils.NewMongoCommunityConn(testMongoAddressCs, "primary", true, "", "", nil)
 
 		// drop all databases
 		dbs, err := conn.Client.ListDatabaseNames(nil, bson.M{})

@@ -53,7 +53,7 @@ func TestDbSync(t *testing.T) {
 	conf.Options.LogLevel = "debug"
 
 	conn, err := utils.NewMongoCommunityConn(testMongoAddress, utils.VarMongoConnectModePrimary, false,
-		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, "")
+		utils.ReadWriteConcernDefault, utils.ReadWriteConcernDefault, nil)
 	assert.Equal(t, nil, err, "should be equal")
 
 	// init DocExecutor, ignore DBSyncer here
@@ -296,7 +296,7 @@ func TestStartDropDestCollection(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop old db
@@ -342,7 +342,7 @@ func TestStartDropDestCollection(t *testing.T) {
 		nr++
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, utils.VarMongoConnectModePrimary, true,
-			utils.ReadWriteConcernDefault, utils.ReadWriteConcernMajority, "")
+			utils.ReadWriteConcernDefault, utils.ReadWriteConcernMajority, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop old db
@@ -400,7 +400,7 @@ func TestStartIndexSync(t *testing.T) {
 		conf.Options.FullSyncReaderCollectionParallel = 4
 
 		conn, err := utils.NewMongoCommunityConn(testMongoAddress, utils.VarMongoConnectModeSecondaryPreferred, true,
-			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, "")
+			utils.ReadWriteConcernLocal, utils.ReadWriteConcernDefault, nil)
 		assert.Equal(t, nil, err, "should be equal")
 
 		// drop old db
